@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// User Model
+
+model User {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  email          String   @unique
+  password       String
+  profilePicture String?  // Optional field for the profile picture URL
+  createdAt      DateTime @default(now())
+
+
+
+  Booking Booking[]
+}
+
+
+
+model Bike {
+  id          Int       @id @default(autoincrement())
+  name        String
+  mileage     Float     // Assuming mileage is a number (e.g., in kilometers)
+  photo       String    // Assuming this is a URL or path to the image
+  isAvailable Boolean   @default(true) // Default to true if not specified
+
+  // Relation to Booking
+  bookings Booking[]
+}
+
+
+// Booking Schema
+
+model Booking {
+  id              Int      @id @default(autoincrement())
+  bikeId          Int
+  userId          Int
+  bookingFromDate DateTime
+  bookingToDate   DateTime
+  createdAt       DateTime @default(now())
+
+  // Relations
+  bike   Bike   @relation(fields: [bikeId], references: [id])
+  bookedBy User @relation(fields: [userId], references: [id])
+}
+
+
